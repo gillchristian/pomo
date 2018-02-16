@@ -1,0 +1,17 @@
+{
+  "name": "Pomo",
+  "short_name": "Pomo",
+  "lang": "en",
+  "description": "Dead simple pomodoro clock",
+  "start_url": "./",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16",
+      "type": "image/png"
+    }
+  ],
+  "background_color": "#333",
+  "theme_color": "white"
+}

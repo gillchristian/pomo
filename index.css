@@ -1,0 +1,16 @@
+body {
+  padding: 0;
+  margin: 0;
+  font-family: Helvetica;
+}
+
+#root, .container {
+  width: 100%;
+  height: 100vh;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
