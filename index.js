@@ -57,43 +57,71 @@ const requestNotificationPermission = (state) => {
 
 navigator.serviceWorker.register('sw.js')
 
-const REST_DURATION = 5 * 60 * 1000
-const WORK_DURATION = 25 * 60 * 1000
+const REST_DEFAULT = 5 * 60 * 1000
+const WORK_DEFAULT = 25 * 60 * 1000
 
-const root = document.getElementById('root')
+const getPomo = (config = {})  => {
 
-const render = getRenderer(root)
-const updateState = getStateUpdater({
-  REST_DURATION,
-  WORK_DURATION,
-})
+  const REST_DURATION = config.rest || REST_DEFAULT
+  const WORK_DURATION = config.work || WORK_DEFAULT
 
-let state = {
-  time: WORK_DURATION,
-  isWorking: true,
-  showNotification: false,
-  canShowNotifications: false,
-}
+  const root = document.getElementById('root')
 
-render(state)
+  const render = getRenderer(root)
+  const updateState = getStateUpdater({
+    REST_DURATION,
+    WORK_DURATION,
+  })
 
-requestNotificationPermission(state)
-
-setInterval(() => {
-  state = updateState(state)
-
-  if (state.showNotification) {
-    const title = state.isWorking ? 'Back to work' : 'Get some rest yo!'
-    const body = state.isWorking
-      ? 'Time to concentrate and be productive!'
-      : 'Time to stretch your legs and get some water...'
-
-    showNotification(state, title, {
-      body,
-      icon: './pomo.jpg',
-    })
+  const defaultState = {
+    time: WORK_DURATION,
+    isWorking: true,
+    showNotification: false,
+    canShowNotifications: false,
   }
 
-  render(state)
-}, 1000)
+  let state = { ...defaultState }
+  let interval
 
+  render(state)
+
+  requestNotificationPermission(state)
+
+  const start = () => setInterval(() => {
+    state = updateState(state)
+
+    if (state.showNotification) {
+      const title = state.isWorking ? 'Back to work' : 'Get some rest yo!'
+      const body = state.isWorking
+        ? 'Time to concentrate and be productive!'
+        : 'Time to stretch your legs and get some water...'
+
+      showNotification(state, title, {
+        body,
+        icon: './pomo.jpg',
+      })
+    }
+
+    render(state)
+  }, 1000)
+
+  return {
+    stop() {
+      clearInterval(interval)
+
+      state = { ...defaultState }
+    },
+
+    pause() {
+      clearInterval(interval)
+    },
+
+    start() {
+      interval = start()
+    }
+  }
+}
+
+const pomo = getPomo()
+
+pomo.start()
